@@ -23,6 +23,7 @@ import lombok.ToString;
 	  private String id_produto;
 	  private String id_empresa , id_notafiscal , codigo_produto , ncm , cest , ean ;
 	  private Double valor;
+	  private Long data;
 	  
 
 	}
