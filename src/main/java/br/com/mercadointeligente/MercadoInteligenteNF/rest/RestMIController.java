@@ -2,6 +2,7 @@ package br.com.mercadointeligente.MercadoInteligenteNF.rest;
 
 import java.util.UUID;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.mercadointeligente.MercadoInteligenteNF.entity.Empresa;
+import br.com.mercadointeligente.MercadoInteligenteNF.entity.NFiscal;
+import br.com.mercadointeligente.MercadoInteligenteNF.entity.NFprod;
 import br.com.mercadointeligente.MercadoInteligenteNF.entity.Person;
 import br.com.mercadointeligente.MercadoInteligenteNF.repository.EmpresaRepository;
 import br.com.mercadointeligente.MercadoInteligenteNF.repository.NFProdRepository;
@@ -47,29 +50,60 @@ public class RestMIController {
 
 	 
 	  }
-	@GetMapping(path="/teste2")
-	  public void teste2() {
-	  System.out.println("oi");
-	  Empresa jonDoe = this.repositoryE.save(new Empresa(UUID.randomUUID().toString(),"2333","asbc","id1","","","","","",""));
+	
+	
+	@CrossOrigin(origins = "*")
+	@PostMapping(path="/empresaIn",consumes = "application/json")
+	
+	@ResponseBody  
+	  public String empresaIn(@RequestBody Empresa emp) {
+	  System.out.println("oiemp");
+	  String sha256hex = DigestUtils.sha256Hex(emp.getCnpj()+"|"+emp.getUf()+"|"+emp.getMunicipio()+"|"+emp.getRua()+"|"+emp.getNumero());
+	  emp.setId_empresa(sha256hex);
+	  Empresa jonDoe = this.repositoryE.save(emp);
+	  return sha256hex;
 	    
 	   // System.out.println(repository.findById(jonDoe.getId()).get().getId());
+
+	 
+	  }
+
+	@CrossOrigin(origins = "*")
+	@PostMapping(path="/nfIn",consumes = "application/json")
+
+	@ResponseBody  
+	  public String nfIn(@RequestBody NFiscal nf) {
+	  System.out.println("oinf");
+	  String sha256hex = DigestUtils.sha256Hex(nf.getCodigoAcesso()+"|"+nf.getNumero()+"|"+nf.getSerie()+"|"+nf.getModelo());
+
+	  nf.setId_nf(sha256hex);
+	
+	  NFiscal nfiscal = this.repositoryNF.save(nf);
+	   return   sha256hex;
+	
 
 	 
 	  }
 	
+	
 	@CrossOrigin(origins = "*")
-	@PostMapping(path="/empresaIn",consumes = "application/json")
-	//String cvmbd, String cvmprop, String databd, String dataProp,String perbd, String perprop
-	//http://localhost:8080/getRelatorioDiferencas?cvmbd=5258&cvmprop=5258&databd=122011&dataprop=122012&perbd=A&perprop=A
+	@PostMapping(path="/nfProdIn",consumes = "application/json")
+
 	@ResponseBody  
-	  public void empresaIn(@RequestBody Empresa emp) {
-	  System.out.println("oi");
-	  emp.setId_empresa(UUID.randomUUID().toString());
-	  Empresa jonDoe = this.repositoryE.save(emp);
-	    
-	   // System.out.println(repository.findById(jonDoe.getId()).get().getId());
+	  public String nfProdIn(@RequestBody NFprod nfp) {
+	  System.out.println("oiprod");
+	  String sha256hex = DigestUtils.sha256Hex(nfp.getId_empresa()+"|"+nfp.getId_notafiscal()+"|"+nfp.getCodigo_produto());
+
+	  nfp.setCodigo_produto(sha256hex);
+	
+	  NFprod nfprod = this.repositoryNFP.save(nfp);
+	   return   sha256hex;
+	
 
 	 
 	  }
+	
+	
+	
 	
 }
