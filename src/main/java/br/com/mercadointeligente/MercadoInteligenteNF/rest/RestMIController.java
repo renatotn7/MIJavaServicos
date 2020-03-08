@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.mercadointeligente.MercadoInteligenteNF.entity.Empresa;
 import br.com.mercadointeligente.MercadoInteligenteNF.entity.NFiscal;
 import br.com.mercadointeligente.MercadoInteligenteNF.entity.NFprod;
+import br.com.mercadointeligente.MercadoInteligenteNF.entity.NFprodHist;
 import br.com.mercadointeligente.MercadoInteligenteNF.entity.Person;
 import br.com.mercadointeligente.MercadoInteligenteNF.repository.EmpresaRepository;
+import br.com.mercadointeligente.MercadoInteligenteNF.repository.NFProdHistRepository;
 import br.com.mercadointeligente.MercadoInteligenteNF.repository.NFProdRepository;
 import br.com.mercadointeligente.MercadoInteligenteNF.repository.NFiscalRepository;
 import br.com.mercadointeligente.MercadoInteligenteNF.repository.PersonRepository;
@@ -34,6 +36,8 @@ public class RestMIController {
 	 public NFiscalRepository repositoryNF;
 	 @Autowired 
 	 public NFProdRepository repositoryNFP;
+	 @Autowired 
+	 public NFProdHistRepository repositoryNFPH;
 	  protected static Person newPerson(String name, int age) {
 		    return newPerson(UUID.randomUUID().toString(), name, age);
 		  }
@@ -97,6 +101,23 @@ public class RestMIController {
 	  nfp.setCodigo_produto(sha256hex);
 	
 	  NFprod nfprod = this.repositoryNFP.save(nfp);
+	   return   sha256hex;
+	
+
+	 
+	  }
+	
+	@CrossOrigin(origins = "*")
+	@PostMapping(path="/nfProdHistIn",consumes = "application/json")
+
+	@ResponseBody  
+	  public String nfProdHistIn(@RequestBody NFprodHist nfp) {
+	  System.out.println("oiprod");
+	  String sha256hex = DigestUtils.sha256Hex(nfp.getId_empresa()+"|"+nfp.getId_notafiscal()+"|"+nfp.getCodigo_produto()+"|"+nfp.getData());
+
+	  nfp.setCodigo_produto(sha256hex);
+	
+	  NFprodHist nfprod = this.repositoryNFPH.save(nfp);
 	   return   sha256hex;
 	
 
